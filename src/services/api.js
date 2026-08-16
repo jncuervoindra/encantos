@@ -1,5 +1,14 @@
 import { API_BASE_URL } from '../config.js'
 
+/**
+ * Realiza una petición a la API de Google Apps Script.
+ *
+ * @param {string} route - Ruta del endpoint que se va a invocar.
+ * @param {string} [method='GET'] - Método HTTP de la petición.
+ * @param {unknown} [data] - Cuerpo de la petición (se serializa a JSON).
+ * @returns {Promise<unknown>} Los datos devueltos por la API.
+ * @throws {Error} Si la API no está configurada, falla la red, la respuesta no es JSON o la API reporta un error.
+ */
 async function apiRequest(route, method = 'GET', data) {
   if (!API_BASE_URL) {
     throw new Error('API no configurada: define SCRIPT_ID en src/config.js')

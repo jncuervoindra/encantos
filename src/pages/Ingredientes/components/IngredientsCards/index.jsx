@@ -1,123 +1,37 @@
-import styled from 'styled-components'
 import { formatCurrency } from '../../../../utils/format.js'
 import Button from '../../../../components/Button/index.jsx'
 import Switch from '../../../../components/Switch/index.jsx'
 import StockBadge from '../StockBadge/index.jsx'
 import StockBar from '../StockBar/index.jsx'
+import {
+  Grid,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardName,
+  CardMeta,
+  StockSection,
+  StockLabel,
+  StockRow,
+  StockAmount,
+  StockUnit,
+  Details,
+  Detail,
+  DetailLabel,
+  DetailValue,
+  CardFooter,
+} from './styles.js'
 
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 16px;
-`
-
-const Card = styled.article`
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 18px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-  transition: border-color 120ms ease, box-shadow 120ms ease;
-
-  &:hover {
-    border-color: var(--color-accent-hover);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-  }
-`
-
-const CardHeader = styled.div`
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-`
-
-const CardTitle = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-`
-
-const CardName = styled.h3`
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.3;
-`
-
-const CardMeta = styled.span`
-  font-size: 13px;
-  color: var(--color-text-muted);
-`
-
-const StockSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`
-
-const StockLabel = styled.span`
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--color-text-muted);
-`
-
-const StockRow = styled.div`
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-`
-
-const StockAmount = styled.span`
-  font-size: 22px;
-  font-weight: 600;
-  line-height: 1;
-`
-
-const StockUnit = styled.span`
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-text-muted);
-`
-
-const Details = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-`
-
-const Detail = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-`
-
-const DetailLabel = styled.span`
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--color-text-muted);
-`
-
-const DetailValue = styled.span`
-  font-size: 14px;
-  color: var(--color-text);
-`
-
-const CardFooter = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding-top: 14px;
-  border-top: 1px solid var(--color-border);
-`
-
+/**
+ * Vista en tarjetas de los ingredientes.
+ *
+ * @param {object} props - Propiedades de la vista.
+ * @param {Array} props.items - Ingredientes a mostrar.
+ * @param {Function} props.onEdit - Callback al editar un ingrediente.
+ * @param {Function} props.onToggleActive - Callback al activar/desactivar.
+ * @param {string|number|null} props.togglingId - Id del ingrediente en proceso de cambio.
+ * @returns {JSX.Element} Rejilla de tarjetas de ingredientes.
+ */
 function IngredientsCards({ items, onEdit, onToggleActive, togglingId }) {
   return (
     <Grid>

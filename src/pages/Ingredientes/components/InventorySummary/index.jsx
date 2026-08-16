@@ -1,54 +1,4 @@
-import styled from 'styled-components'
-
-const toneStyles = {
-  total: { color: 'var(--color-accent)', background: 'var(--color-accent-soft)' },
-  low: { color: 'var(--color-warning)', background: 'var(--color-warning-soft)' },
-  out: { color: 'var(--color-danger)', background: 'var(--color-danger-soft)' },
-}
-
-const Summary = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 12px;
-`
-
-const Stat = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-`
-
-const Icon = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 9px;
-  flex-shrink: 0;
-  color: ${({ $tone }) => toneStyles[$tone].color};
-  background: ${({ $tone }) => toneStyles[$tone].background};
-`
-
-const StatText = styled.div`
-  display: flex;
-  flex-direction: column;
-`
-
-const StatValue = styled.span`
-  font-size: 20px;
-  font-weight: 600;
-  line-height: 1.1;
-`
-
-const StatLabel = styled.span`
-  font-size: 12px;
-  color: var(--color-text-muted);
-`
+import { Summary, Stat, Icon, StatText, StatValue, StatLabel } from './styles.js'
 
 const iconProps = {
   width: 17,
@@ -62,6 +12,15 @@ const iconProps = {
   'aria-hidden': 'true',
 }
 
+/**
+ * Resumen del inventario (total, stock bajo y agotados).
+ *
+ * @param {object} props - Propiedades del resumen.
+ * @param {number} props.total - Total de ingredientes.
+ * @param {number} props.lowStock - Cantidad con stock bajo.
+ * @param {number} props.outOfStock - Cantidad agotados.
+ * @returns {JSX.Element} Resumen del inventario.
+ */
 function InventorySummary({ total, lowStock, outOfStock }) {
   return (
     <Summary>

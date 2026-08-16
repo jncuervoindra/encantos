@@ -1,48 +1,12 @@
-import styled from 'styled-components'
+import { Nav, Button, Ellipsis } from './styles.js'
 
-const Nav = styled.nav`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 4px;
-`
-
-const Button = styled.button`
-  min-width: 32px;
-  height: 32px;
-  padding: 0 10px;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--color-text-muted);
-  font: inherit;
-  font-size: 13px;
-  cursor: pointer;
-
-  &:hover:not(:disabled) {
-    background: var(--color-accent-hover);
-    color: var(--color-text);
-  }
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: default;
-  }
-
-  &.current {
-    background: var(--color-accent-soft);
-    color: var(--color-accent);
-    font-weight: 600;
-  }
-`
-
-const Ellipsis = styled.span`
-  min-width: 32px;
-  text-align: center;
-  color: var(--color-text-muted);
-`
-
+/**
+ * Calcula la lista de páginas a mostrar, con elipses cuando hay muchas.
+ *
+ * @param {number} current - Página actual.
+ * @param {number} total - Total de páginas.
+ * @returns {(number|string)[]} Páginas y elipses ('...').
+ */
 function getPages(current, total) {
   if (total <= 7) {
     return Array.from({ length: total }, (_, index) => index + 1)
@@ -60,6 +24,15 @@ function getPages(current, total) {
   return pages
 }
 
+/**
+ * Controles de paginación.
+ *
+ * @param {object} props - Propiedades de la paginación.
+ * @param {number} props.page - Página actual.
+ * @param {number} props.totalPages - Total de páginas.
+ * @param {Function} props.onPageChange - Callback al cambiar de página.
+ * @returns {JSX.Element|null} Controles de paginación o null si hay una sola página.
+ */
 function Pagination({ page, totalPages, onPageChange }) {
   if (totalPages <= 1) return null
 

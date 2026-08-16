@@ -4,6 +4,13 @@ export const STOCK_STATUS_LABELS = {
   out: 'Agotado',
 }
 
+/**
+ * Calcula el estado del stock y su proporción respecto al stock mínimo.
+ *
+ * @param {number|string} stock - Cantidad disponible.
+ * @param {number|string} minStock - Stock mínimo requerido.
+ * @returns {{status: string, ratio: number}} Estado ('normal' | 'low' | 'out') y ratio entre 0 y 1.
+ */
 export function getStockStatus(stock, minStock) {
   const value = Number(stock)
   const minimum = Number(minStock)

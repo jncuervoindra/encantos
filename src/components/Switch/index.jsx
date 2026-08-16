@@ -1,34 +1,15 @@
-import styled from 'styled-components'
+import { Track, Knob } from './styles.js'
 
-const Track = styled.button`
-  position: relative;
-  width: 40px;
-  height: 22px;
-  padding: 0;
-  border: none;
-  border-radius: 999px;
-  background: ${({ $checked }) => ($checked ? 'var(--color-accent)' : 'var(--color-border)')};
-  cursor: pointer;
-  transition: background-color 120ms ease;
-
-  &:disabled {
-    opacity: 0.55;
-    cursor: default;
-  }
-`
-
-const Knob = styled.span`
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #fff;
-  transition: transform 120ms ease;
-  transform: ${({ $checked }) => ($checked ? 'translateX(18px)' : 'translateX(0)')};
-`
-
+/**
+ * Interruptor accesible (switch) para alternar un valor booleano.
+ *
+ * @param {object} props - Propiedades del interruptor.
+ * @param {boolean} props.checked - Estado actual.
+ * @param {Function} props.onChange - Callback al alternar el estado.
+ * @param {boolean} [props.disabled=false] - Deshabilita el interruptor.
+ * @param {string} [props.label='Cambiar estado'] - Etiqueta accesible.
+ * @returns {JSX.Element} Interruptor estilizado.
+ */
 function Switch({ checked, onChange, disabled = false, label = 'Cambiar estado' }) {
   return (
     <Track

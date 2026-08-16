@@ -1,96 +1,19 @@
-import styled from 'styled-components'
-import { breakpoints } from '../../../../styles/breakpoints.js'
 import { formatCurrency } from '../../../../utils/format.js'
 import Button from '../../../../components/Button/index.jsx'
 import Switch from '../../../../components/Switch/index.jsx'
 import StockBadge from '../StockBadge/index.jsx'
+import { List, Row, Main, Name, Meta, Info, StockText, CostText, Actions } from './styles.js'
 
-const List = styled.ul`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-`
-
-const Row = styled.li`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px 14px;
-  padding: 12px 16px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  transition: border-color 120ms ease, box-shadow 120ms ease;
-
-  &:hover {
-    border-color: var(--color-accent-hover);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-  }
-
-  @media (min-width: ${breakpoints.tabletMin}) {
-    flex-wrap: nowrap;
-  }
-`
-
-const Main = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-  flex: 1;
-`
-
-const Name = styled.span`
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-text);
-`
-
-const Meta = styled.span`
-  font-size: 12px;
-  color: var(--color-text-muted);
-`
-
-const Info = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-`
-
-const StockText = styled.span`
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-text);
-  min-width: 52px;
-  text-align: right;
-  white-space: nowrap;
-`
-
-const CostText = styled.span`
-  font-size: 13px;
-  color: var(--color-text-muted);
-  min-width: 68px;
-  text-align: right;
-  white-space: nowrap;
-`
-
-const Actions = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  width: 100%;
-
-  @media (min-width: ${breakpoints.tabletMin}) {
-    width: auto;
-    justify-content: flex-end;
-    margin-left: auto;
-  }
-`
-
+/**
+ * Vista en lista de los ingredientes.
+ *
+ * @param {object} props - Propiedades de la vista.
+ * @param {Array} props.items - Ingredientes a mostrar.
+ * @param {Function} props.onEdit - Callback al editar un ingrediente.
+ * @param {Function} props.onToggleActive - Callback al activar/desactivar.
+ * @param {string|number|null} props.togglingId - Id del ingrediente en proceso de cambio.
+ * @returns {JSX.Element} Lista de ingredientes.
+ */
 function IngredientsList({ items, onEdit, onToggleActive, togglingId }) {
   return (
     <List>

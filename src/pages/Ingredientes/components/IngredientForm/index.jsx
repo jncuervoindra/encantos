@@ -1,87 +1,27 @@
 import { useState } from 'react'
-import styled from 'styled-components'
 import Button from '../../../../components/Button/index.jsx'
+import {
+  Form,
+  Fields,
+  Row,
+  Field,
+  Label,
+  Input,
+  Select,
+  ErrorText,
+  FormError,
+  Actions,
+} from './styles.js'
 
 const UNITS = ['kg', 'g', 'l', 'ml', 'unidad']
 
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`
-
-const Fields = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`
-
-const Row = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-`
-
-const Field = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-`
-
-const Label = styled.label`
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--color-text);
-`
-
-const Input = styled.input`
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  background: var(--color-surface);
-  font: inherit;
-  font-size: 14px;
-  color: var(--color-text);
-  outline: none;
-
-  &::placeholder {
-    color: var(--color-text-muted);
-  }
-
-  &:focus {
-    border-color: var(--color-accent);
-  }
-
-  &[aria-invalid='true'] {
-    border-color: var(--color-danger);
-  }
-`
-
-const Select = styled(Input)`
-  cursor: pointer;
-`
-
-const ErrorText = styled.span`
-  font-size: 12px;
-  color: var(--color-danger);
-`
-
-const FormError = styled.div`
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: var(--color-danger-soft);
-  color: var(--color-danger);
-  font-size: 13px;
-`
-
-const Actions = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  padding-top: 4px;
-`
-
+/**
+ * Valida que un valor numérico sea obligatorio, numérico y no negativo.
+ *
+ * @param {string|number|null|undefined} value - Valor a validar.
+ * @param {string} label - Nombre del campo (para el mensaje de error).
+ * @returns {string|null} Mensaje de error o null si es válido.
+ */
 function validateNumber(value, label) {
   if (value === '' || value === null || value === undefined) {
     return `${label} es obligatorio.`
@@ -98,6 +38,12 @@ function validateNumber(value, label) {
   return null
 }
 
+/**
+ * Valida todos los campos del formulario.
+ *
+ * @param {object} values - Valores del formulario.
+ * @returns {object} Errores por campo (vacío si es válido).
+ */
 function validate(values) {
   const errors = {}
 
@@ -117,6 +63,19 @@ function validate(values) {
   return errors
 }
 
+/**
+ * Formulario para crear o editar un ingrediente.
+ *
+ * @param {object} props - Propiedades del formulario.
+ * @param {object|null} [props.initialValues] - Valores iniciales (edición).
+ * @param {string[]} [props.categories=[]] - Categorías disponibles.
+ * @param {boolean} [props.submitting=false] - Indica si hay un envío en curso.
+ * @param {string|null} [props.submitError=null] - Error de envío a mostrar.
+ * @param {string} [props.submitLabel='Guardar ingrediente'] - Texto del botón de envío.
+ * @param {Function} props.onSubmit - Callback al enviar el formulario.
+ * @param {Function} props.onCancel - Callback al cancelar.
+ * @returns {JSX.Element} Formulario del ingrediente.
+ */
 function IngredientForm({
   initialValues,
   categories = [],
@@ -136,6 +95,12 @@ function IngredientForm({
   }))
   const [errors, setErrors] = useState({})
 
+  /**
+   * Actualiza un campo del formulario y limpia su error.
+   *
+   * @param {string} field - Nombre del campo.
+   * @param {string} value - Nuevo valor.
+   */
   const setValue = (field, value) => {
     setValues((prev) => ({ ...prev, [field]: value }))
     setErrors((prev) => {
@@ -146,6 +111,11 @@ function IngredientForm({
     })
   }
 
+  /**
+   * Valida y envía el formulario.
+   *
+   * @param {React.FormEvent} event - Evento de envío del formulario.
+   */
   const handleSubmit = (event) => {
     event.preventDefault()
 

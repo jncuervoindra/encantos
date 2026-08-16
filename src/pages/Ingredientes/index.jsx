@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
-import styled from 'styled-components'
-import { breakpoints } from '../../styles/breakpoints.js'
-import { useIngredients } from '../../hooks/useIngredients.js'
+import { useToggle } from '@uidotdev/usehooks'
+import { useDebounce } from '@uidotdev/usehooks'
+import { useIngredientsStore } from '../../hooks/useIngredients.js'
+import { useMemo } from 'react'
+import { getStockStatus } from '../../utils/stock.js'
 import { createIngredient, updateIngredient, updateIngredientActive } from '../../services/ingredients.js'
 import IngredientsToolbar from './components/IngredientsToolbar/index.jsx'
 import IngredientsCards from './components/IngredientsCards/index.jsx'
@@ -11,116 +13,71 @@ import ViewToggle from './components/ViewToggle/index.jsx'
 import IngredientForm from './components/IngredientForm/index.jsx'
 import Modal from '../../components/Modal/index.jsx'
 import Pagination from '../../components/Pagination/index.jsx'
+import {
+  Page,
+  Title,
+  Count,
+  ContentHeader,
+  StateWrap,
+  Spinner,
+  RetryButton,
+  Toast,
+} from './styles.js'
 
-const Page = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  max-width: 1160px;
-  margin: 0 auto;
-`
-
-const Title = styled.h1`
-  font-size: 24px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-
-  @media (max-width: ${breakpoints.mobileMax}) {
-    font-size: 20px;
-  }
-`
-
-const Count = styled.p`
-  font-size: 13px;
-  color: var(--color-text-muted);
-`
-
-const ContentHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-`
-
-const StateWrap = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  padding: 56px 16px;
-  text-align: center;
-  color: var(--color-text-muted);
-  font-size: 14px;
-`
-
-const Spinner = styled.span`
-  width: 22px;
-  height: 22px;
-  border: 2px solid var(--color-border);
-  border-top-color: var(--color-accent);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-`
-
-const RetryButton = styled.button`
-  padding: 8px 18px;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  background: var(--color-surface);
-  color: var(--color-text);
-  font: inherit;
-  font-size: 14px;
-  cursor: pointer;
-
-  &:hover {
-    background: var(--color-accent-hover);
-  }
-`
-
-const Toast = styled.div`
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: var(--z-modal);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background: var(--color-text);
-  color: #fff;
-  border-radius: 8px;
-  font-size: 14px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
-`
-
+/**
+ * Página de administración de ingredientes.
+ *
+ * @returns {JSX.Element} Vista de la página de ingredientes.
+ */
 function Ingredientes() {
-  const {
-    status,
-    items,
-    totalItems,
-    page,
-    totalPages,
-    search,
-    category,
-    categories,
-    summary,
-    hasFilters,
-    setSearch,
-    setCategory,
-    setPage,
-    setItemActive,
-    reload,
-  } = useIngredients()
+  const items = useIngredientsStore((state) => state.items)
+  const status = useIngredientsStore((state) => state.status)
+  const search = useIngredientsStore((state) => state.search)
+  const category = useIngredientsStore((state) => state.category)
+  const page = useIngredientsStore((state) => state.page)
+  const load = useIngredientsStore((state) => state.load)
+  const setSearch = useIngredientsStore((state) => state.setSearch)
+  const setCategory = useIngredientsStore((state) => state.setCategory)
+  const setPage = useIngredientsStore((state) => state.setPage)
+  const setItemActive = useIngredientsStore((state) => state.setItemActive)
+  const debouncedSearch = useDebounce(search, 250)
 
-  const [modalOpen, setModalOpen] = useState(false)
+  useEffect(() => {
+    load()
+  }, [load])
+
+  /**
+   * Normaliza un texto para búsquedas (minúsculas y sin tildes).
+   *
+   * @param {string} value - Texto a normalizar.
+   * @returns {string} Texto normalizado.
+   */
+  const normalize = (value) => value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  const categories = useMemo(
+    () => [...new Set(items.map((item) => item.category))].sort((a, b) => a.localeCompare(b)),
+    [items],
+  )
+  const filtered = useMemo(() => {
+    const query = normalize(debouncedSearch.trim())
+    return items.filter((item) =>
+      (!query || normalize(item.name).includes(query) || normalize(item.category).includes(query)) &&
+      (!category || item.category === category),
+    )
+  }, [items, debouncedSearch, category])
+  const totalItems = filtered.length
+  const totalPages = Math.max(1, Math.ceil(totalItems / 10))
+  const currentPage = Math.min(page, totalPages)
+  const pageItems = filtered.slice((currentPage - 1) * 10, currentPage * 10)
+  const summary = useMemo(() => items.reduce((result, item) => {
+    const { status: stockStatus } = getStockStatus(item.stock, item.minStock)
+    if (stockStatus === 'low') result.lowStock += 1
+    if (stockStatus === 'out') result.outOfStock += 1
+    return result
+  }, { total: items.length, lowStock: 0, outOfStock: 0 }), [items])
+  const hasFilters = search.trim() !== '' || category !== ''
+  const reload = load
+
+  const [modalOpen, setModalOpen] = useToggle(false)
   const [editing, setEditing] = useState(null)
   const [view, setView] = useState('cards')
   const [submitting, setSubmitting] = useState(false)
@@ -135,18 +92,25 @@ function Ingredientes() {
     return () => clearTimeout(timer)
   }, [confirmation])
 
+  /** Abre el modal para crear un nuevo ingrediente. */
   const openCreateModal = () => {
     setEditing(null)
     setSubmitError(null)
     setModalOpen(true)
   }
 
+  /**
+   * Abre el modal para editar un ingrediente existente.
+   *
+   * @param {object} ingredient - Ingrediente a editar.
+   */
   const openEditModal = (ingredient) => {
     setEditing(ingredient)
     setSubmitError(null)
     setModalOpen(true)
   }
 
+  /** Cierra el modal de creación/edición si no hay un envío en curso. */
   const closeModal = () => {
     if (submitting) return
     setModalOpen(false)
@@ -154,6 +118,12 @@ function Ingredientes() {
     setSubmitError(null)
   }
 
+  /**
+   * Envía el formulario para crear o actualizar un ingrediente.
+   *
+   * @param {object} payload - Datos del ingrediente.
+   * @returns {Promise<void>}
+   */
   const handleSubmit = async (payload) => {
     setSubmitting(true)
     setSubmitError(null)
@@ -177,6 +147,13 @@ function Ingredientes() {
     }
   }
 
+  /**
+   * Activa o desactiva un ingrediente y sincroniza con la API.
+   *
+   * @param {object} ingredient - Ingrediente a modificar.
+   * @param {boolean} active - Nuevo estado activo.
+   * @returns {Promise<void>}
+   */
   const handleToggleActive = async (ingredient, active) => {
     setItemActive(ingredient.id, active)
     setTogglingId(ingredient.id)
@@ -229,20 +206,20 @@ function Ingredientes() {
         </ContentHeader>
         {view === 'cards' ? (
           <IngredientsCards
-            items={items}
+            items={pageItems}
             onEdit={openEditModal}
             onToggleActive={handleToggleActive}
             togglingId={togglingId}
           />
         ) : (
           <IngredientsList
-            items={items}
+            items={pageItems}
             onEdit={openEditModal}
             onToggleActive={handleToggleActive}
             togglingId={togglingId}
           />
         )}
-        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+        <Pagination page={currentPage} totalPages={totalPages} onPageChange={setPage} />
       </>
     )
   }

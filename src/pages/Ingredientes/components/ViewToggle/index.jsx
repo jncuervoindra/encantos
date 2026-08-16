@@ -1,34 +1,4 @@
-import styled from 'styled-components'
-
-const Group = styled.div`
-  display: inline-flex;
-  gap: 2px;
-  padding: 3px;
-  background: var(--color-neutral-soft);
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-`
-
-const Button = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border: none;
-  border-radius: 7px;
-  background: ${({ $active }) => ($active ? 'var(--color-surface)' : 'transparent')};
-  color: ${({ $active }) => ($active ? 'var(--color-text)' : 'var(--color-text-muted)')};
-  box-shadow: ${({ $active }) => ($active ? '0 1px 3px rgba(0, 0, 0, 0.08)' : 'none')};
-  font: inherit;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 120ms ease, color 120ms ease;
-
-  &:hover {
-    color: var(--color-text);
-  }
-`
+import { Group, Button } from './styles.js'
 
 const iconProps = {
   width: 15,
@@ -42,6 +12,14 @@ const iconProps = {
   'aria-hidden': 'true',
 }
 
+/**
+ * Selector para alternar entre la vista de tarjetas y la de lista.
+ *
+ * @param {object} props - Propiedades del selector.
+ * @param {'cards'|'list'} props.view - Vista activa.
+ * @param {Function} props.onChange - Callback al cambiar la vista.
+ * @returns {JSX.Element} Selector de vista.
+ */
 function ViewToggle({ view, onChange }) {
   return (
     <Group role="group" aria-label="Cambiar vista">

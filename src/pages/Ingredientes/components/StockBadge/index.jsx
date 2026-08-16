@@ -1,33 +1,15 @@
-import styled from 'styled-components'
 import { getStockStatus, STOCK_STATUS_LABELS } from '../../../../utils/stock.js'
+import { Badge, Dot } from './styles.js'
 
-const statusStyles = {
-  normal: { color: 'var(--color-success)', background: 'var(--color-success-soft)' },
-  low: { color: 'var(--color-warning)', background: 'var(--color-warning-soft)' },
-  out: { color: 'var(--color-danger)', background: 'var(--color-danger-soft)' },
-}
-
-const Badge = styled.span`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 500;
-  white-space: nowrap;
-  color: ${({ $status }) => statusStyles[$status].color};
-  background: ${({ $status }) => statusStyles[$status].background};
-`
-
-const Dot = styled.span`
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  flex-shrink: 0;
-`
-
+/**
+ * Insignia que indica el estado del stock de un ingrediente.
+ *
+ * @param {object} props - Propiedades de la insignia.
+ * @param {number|string} props.stock - Cantidad disponible.
+ * @param {number|string} props.minStock - Stock mínimo requerido.
+ * @param {boolean} [props.showLabel=true] - Muestra la etiqueta de estado.
+ * @returns {JSX.Element} Insignia de estado.
+ */
 function StockBadge({ stock, minStock, showLabel = true }) {
   const { status } = getStockStatus(stock, minStock)
 
